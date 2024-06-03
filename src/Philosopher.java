@@ -4,7 +4,7 @@ public class Philosopher extends Thread {
     private final String name;
     private  final Fork forkLeft;
     private final Fork forkRight;
-    boolean philosopherWaiting = true;
+    private boolean philosopherWaiting = true;
     private static int countPhilosopher = 0;
     private int countEating  = 0;
     private final CountDownLatch countDownLatch;
