@@ -2,9 +2,8 @@ import java.util.concurrent.CountDownLatch;
 
 public class Philosopher extends Thread {
     private final String name;
-    String ring;
-    private  volatile Fork forkLeft;
-    private volatile Fork forkRight;
+    private  final Fork forkLeft;
+    private final Fork forkRight;
     boolean philosopherWaiting = true;
     private static int countPhilosopher = 0;
     private int countEating  = 0;
@@ -22,11 +21,12 @@ public class Philosopher extends Thread {
 
     @Override
     public void run() {
+        System.out.println(getName() + " start");
         try {
             while (true) {
                 if(countEating == 3) {
-                    thinking();
                     System.out.println(name  +  " is full");
+                    thinking();
                     countDownLatch.countDown();
                     break;
                 }
@@ -43,16 +43,19 @@ public class Philosopher extends Thread {
         System.out.println(name + " is eating");
         philosopherWaiting = false;
         countEating++;
-        Thread.sleep(2000);
+        Thread.sleep(1000);
         philosopherWaiting = true;
         setFreeForks();
+        if (countEating == 3) return;
+        thinking();
+
     }
 
     public void thinking() throws InterruptedException {
         System.out.println(name + " is thinking");
         philosopherWaiting = false;
         setFreeForks();
-        Thread.sleep(2000);
+        Thread.sleep(1000);
         philosopherWaiting = true;
     }
 
@@ -61,12 +64,12 @@ public class Philosopher extends Thread {
         return forkLeft.isAvailable()  && forkRight.isAvailable() && philosopherWaiting;
     }
 
-    private void setFreeForks()  {
+    private synchronized void setFreeForks()  {
         forkLeft.setAvailable(true);
         forkRight.setAvailable(true);
     }
 
-    private void setBusyForks()  {
+    private synchronized void setBusyForks()  {
        forkLeft.setAvailable(false);
        forkRight.setAvailable(false);
     }

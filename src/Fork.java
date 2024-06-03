@@ -1,7 +1,7 @@
 public class Fork {
-    private String name;
+    private final String name;
     private static int countForks = 0;
-    private  boolean available = true;
+    private  volatile boolean available = true;
 
     public Fork() {
         this.name = "fork №" + ++countForks;;
