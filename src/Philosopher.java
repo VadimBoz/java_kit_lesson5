@@ -30,7 +30,7 @@ public class Philosopher extends Thread {
                     countDownLatch.countDown();
                     break;
                 }
-                if (readyToEat()) eating();
+                if (isReadyToEat()) eating();
                 else thinking();
             }
         } catch (InterruptedException e) {
@@ -43,7 +43,7 @@ public class Philosopher extends Thread {
         System.out.println(name + " is eating");
         philosopherWaiting = false;
         countEating++;
-        Thread.sleep(1000);
+        sleep(1000);
         philosopherWaiting = true;
         setFreeForks();
         if (countEating == 3) return;
@@ -55,12 +55,12 @@ public class Philosopher extends Thread {
         System.out.println(name + " is thinking");
         philosopherWaiting = false;
         setFreeForks();
-        Thread.sleep(1000);
+        sleep(1000);
         philosopherWaiting = true;
     }
 
 
-    private boolean readyToEat()  {
+    private synchronized boolean isReadyToEat()  {
         return forkLeft.isAvailable()  && forkRight.isAvailable() && philosopherWaiting;
     }
 
