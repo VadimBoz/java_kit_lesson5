@@ -8,14 +8,17 @@ public class Philosopher extends Thread {
     private static int countPhilosopher = 0;
     private int countEating  = 0;
     private final CountDownLatch countDownLatch;
+    private RingTable table;
 
 
-    public Philosopher(Fork forkLeft, Fork forkRight, CountDownLatch countDownLatch) {
+    public Philosopher(Fork forkLeft, Fork forkRight, CountDownLatch countDownLatch, RingTable table)  {
         this.forkLeft = forkLeft;
         this.forkRight = forkRight;
+        this.table = table;
         countPhilosopher++;
         this.name = "Philosopher №" + countPhilosopher;
         this.countDownLatch  = countDownLatch;
+
     }
 
 
@@ -30,7 +33,7 @@ public class Philosopher extends Thread {
                     countDownLatch.countDown();
                     break;
                 }
-                if (isReadyToEat()) eating();
+                if (table.tryGetForks(forkLeft, forkRight)) eating();
                 else thinking();
             }
         } catch (InterruptedException e) {
@@ -39,13 +42,12 @@ public class Philosopher extends Thread {
     }
 
     public void eating() throws InterruptedException {
-        setBusyForks();
-        System.out.println(name + " is eating");
+        System.out.println(name + " is eating" + " left forkLeft-"+  forkLeft  +  ", rightforkRight "+  forkRight);
         philosopherWaiting = false;
         countEating++;
         sleep(1000);
         philosopherWaiting = true;
-        setFreeForks();
+        table.setForksFree(forkLeft, forkRight);
         if (countEating == 3) return;
         thinking();
 
@@ -54,25 +56,15 @@ public class Philosopher extends Thread {
     public void thinking() throws InterruptedException {
         System.out.println(name + " is thinking");
         philosopherWaiting = false;
-        setFreeForks();
         sleep(1000);
         philosopherWaiting = true;
     }
 
 
-    private synchronized boolean isReadyToEat()  {
+    private boolean isReadyToEat()  {
         return forkLeft.isAvailable()  && forkRight.isAvailable() && philosopherWaiting;
     }
 
-    private synchronized void setFreeForks()  {
-        forkLeft.setAvailable(true);
-        forkRight.setAvailable(true);
-    }
-
-    private synchronized void setBusyForks()  {
-       forkLeft.setAvailable(false);
-       forkRight.setAvailable(false);
-    }
 
     @Override
     public String toString() {

@@ -1,19 +1,21 @@
 public class Fork {
     private final String name;
     private static int countForks = 0;
-    private  volatile boolean available = true;
+    private  boolean available = true;
 
     public Fork() {
-        this.name = "fork №" + ++countForks;;
+        this.name = "fork №" + ++countForks;
     }
 
-    public boolean isAvailable() {
+    public  boolean isAvailable() {
         return available;
     }
 
-    public void setAvailable(boolean available) {
+    public  void setAvailable(boolean available) {
         this.available = available;
     }
+
+
 
     @Override
     public String toString() {
